@@ -10,14 +10,19 @@ namespace DBX2_JP_MOD_TOOL
         const string DIR_IGGY = @"data\system\iggy";
         const string FONT_IGGY = "sysfont01_ab.iggy";
         const string FONT_ZH_IGGY = "sysfont01_ab_zh.iggy";
-        public static async Task installXV2Patcher(string path)
+        public static async Task<bool> installXV2Patcher(string path)
         {
             var src = Path.Combine(DIR_BIN, DIR_XV2_PATCHER);
             var dst = path;
 
-            await Task.Run(() => {
+            return await Task.Run(() => {
+                if (!Directory.Exists(Path.Combine(src, DIR_BIN)) ||
+                    !Directory.Exists(Path.Combine(src, DIR_XV2_PATCHER))) return false;
+
                 copyDirectory(Path.Combine(src, DIR_BIN), Path.Combine(dst, DIR_BIN));
                 copyDirectory(Path.Combine(src, DIR_XV2_PATCHER), Path.Combine(dst, DIR_XV2_PATCHER));
+
+                return true;
             });
         }
 
@@ -28,7 +33,8 @@ namespace DBX2_JP_MOD_TOOL
             var zhIggy = Path.Combine(DIR_BIN, DIR_IGGY, FONT_ZH_IGGY);
 
             return await Task.Run(() => {
-                if (File.Exists(sysIggy)) return true;
+                if (File.Exists(sysIggy) ||
+                    !File.Exists(zhIggy)) return true;
 
                 Directory.CreateDirectory(dirIggy);
                 File.Copy(zhIggy, sysIggy, true);

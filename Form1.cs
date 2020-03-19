@@ -57,52 +57,49 @@ namespace DBX2_JP_MOD_TOOL
             appendLog();
 
             // インストール先の存在チェック
-            if (!existsInstallPath())
-            {
-                btnStart.Enabled = true;
-                return;
-            }
+            var result = existsInstallPath();
 
             // 作業所のExcelファイルの存在チェック
-            if (!existsXlsxPath())
-            {
-                btnStart.Enabled = true;
-                return;
-            }
+            if (result) result = existsXlsxPath();
 
             // 作業所のExcelファイルの読込チェック
-            var ds = await readExcelData();
-            if (ds == null)
+            DataSet ds = null;
+            if(result)
             {
-                btnStart.Enabled = true;
-                return;
+                ds = await readExcelData();
+                result = ds != null;
             }
 
-            // 設定を保存
-            Settings.Default.Save();
-
             // 作業所のExcelファイルの解析
-            await analyzeExcelData(ds);
+            if (result) await analyzeExcelData(ds);
 
             // CriPakToolsの実行
-            await startCriPakTools();
+            if (result) result = await startCriPakTools();
 
             // MsgPatcherの実行
-            await startPatcher();
+            if (result) result = await startPatcher();
 
             // XV2Patcherのインストール
-            await installXV2Patcher();
+            if (result) result = await installXV2Patcher();
 
             // システムフォントのチェック
-            await checkSystemFont();
+            if (result) await checkSystemFont();
+
+            // 一時ファイルの削除
+            await deleteTempFiles();
 
             appendLog();
 
-            appendLog("日本語化が完了しました！");
-
-            appendLog("ゲームをプレイする際はDBXV2.exeから起動してください。");
-
-            btnStart.Enabled = true;
+            if (result)
+            {
+                appendLog("日本語化が完了しました！");
+                appendLog("ゲームをプレイする際はDBXV2.exeから起動してください。");
+            }
+            else
+            {
+                appendLog("日本語化に失敗しました。");
+                btnStart.Enabled = true;
+            }
         }
 
         private bool existsInstallPath()
@@ -123,6 +120,7 @@ namespace DBX2_JP_MOD_TOOL
 
             appendLog("OK", false);
             Settings.Default.installPath = txtDB.Text;
+            Settings.Default.Save();
 
             return true;
         }
@@ -149,15 +147,19 @@ namespace DBX2_JP_MOD_TOOL
             appendLog("作業所のExcelファイルの読込チェック...");
 
             var ds = await LoadExcelTask.readExcelData(txtXlsx.Text);
-            if (ds == null)
+
+            if (ds != null)
+            {
+                appendLog("OK", false);
+                Settings.Default.xlsxPath = txtXlsx.Text;
+                Settings.Default.Save();
+            }
+            else
             {
                 appendLog("NG", false);
                 showErrorDialog("作業所のExcelファイル が読み込めませんでした");
                 return null;
             }
-
-            appendLog("OK", false);
-            Settings.Default.xlsxPath = txtXlsx.Text;
 
             return ds;
         }
@@ -171,31 +173,61 @@ namespace DBX2_JP_MOD_TOOL
             appendLog("完了", false);
         }
 
-        private async Task startCriPakTools()
+        private async Task<bool> startCriPakTools()
         {
             appendLog("CriPackToolsの実行...");
 
-            await ProcessTask.startCriPakTools(txtDB.Text);
+            var result = await ProcessTask.startCriPakTools(txtDB.Text);
 
-            appendLog("完了", false);
+            if (result)
+            {
+                appendLog("完了", false);
+            }
+            else
+            {
+                appendLog("失敗", false);
+                showErrorDialog("CriPackTools が見つかりませんでした");
+            }
+
+            return result;
         }
 
-        private async Task startPatcher()
+        private async Task<bool> startPatcher()
         {
             appendLog("MsgPatcherの実行...");
 
-            await ProcessTask.startPatcher(txtDB.Text);
+            var result = await ProcessTask.startPatcher(txtDB.Text);
 
-            appendLog("完了", false);
+            if (result)
+            {
+                appendLog("完了", false);
+            }
+            else
+            {
+                appendLog("失敗", false);
+                showErrorDialog("MsgPatcher が見つかりませんでした");
+            }
+
+            return result;
         }
 
-        private async Task installXV2Patcher()
+        private async Task<bool> installXV2Patcher()
         {
             appendLog("XV2Patcherのインストール...");
 
-            await CopyFileTask.installXV2Patcher(txtDB.Text);
+            var result = await CopyFileTask.installXV2Patcher(txtDB.Text);
 
-            appendLog("完了", false);
+            if (result)
+            {
+                appendLog("完了", false);
+            }
+            else
+            {
+                appendLog("失敗", false);
+                showErrorDialog("XV2Patcher が見つかりませんでした");
+            }
+
+            return result;
         }
 
         private async Task checkSystemFont()
@@ -213,7 +245,15 @@ namespace DBX2_JP_MOD_TOOL
                 appendLog("システムフォントが見つからなかったため、中華フォントを追加しました。");
                 appendLog("中華フォントは一部の日本語が表示出来ません。");
             }
+        }
 
+        private async Task deleteTempFiles()
+        {
+            appendLog("一時ファイルの削除...");
+
+            await DeleteFileTask.deleteTempFiles();
+
+            appendLog("完了", false);
         }
 
         private void showErrorDialog(string message) 
