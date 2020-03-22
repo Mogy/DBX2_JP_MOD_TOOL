@@ -11,6 +11,7 @@ namespace DBX2_JP_MOD_TOOL
             public static readonly Directory Data = new Directory(Path.Combine(Bin.path, "data"));
             public static readonly Directory Msg = new Directory(Path.Combine(Data.path, "msg"));
             public static readonly Directory Iggy = new Directory(Path.Combine(Data.path, "system", "iggy"));
+            public static readonly Directory ZhTex = new Directory(Path.Combine(Iggy.path, "sysfont01_ab_zh"));
             public static readonly Directory XV2Patcher = new Directory(Path.Combine(Bin.path, "xv2patcher"));
             public static readonly Directory XV2Bin = new Directory(Path.Combine(XV2Patcher.path, "bin"));
             public static readonly Directory XV2XV2Patcher = new Directory(Path.Combine(XV2Patcher.path, "xv2patcher"));
@@ -36,9 +37,11 @@ namespace DBX2_JP_MOD_TOOL
             public static readonly File CriPakTools = new File("CriPakTools.exe", Directory.Bin);
             public static readonly File MsgPathcer = new File("DBX2_MsgPatcher.exe", Directory.Bin);
             public static readonly File MsgTool = new File("Dragon_Ball_Xenoverse_2_MSG_Tool.exe", Directory.Bin);
+            public static readonly File IggytexPack = new File("iggytexPack.exe", Directory.Bin);
             public static readonly File ZhFont = new File("sysfont01_ab_zh.iggy", Directory.Iggy);
             public static readonly File ZhTex = new File("sysfont01_ab_zh.iggytex", Directory.Iggy);
             public static readonly File ZhTed = new File("sysfont01_ab_zh.iggyted", Directory.Iggy);
+            public static readonly File ZhXml = new File("iggytexFiles.xml", Directory.ZhTex);
 
             public readonly string fileName;
             public readonly Directory root;

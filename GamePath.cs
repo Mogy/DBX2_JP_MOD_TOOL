@@ -32,6 +32,7 @@ namespace DBX2_JP_MOD_TOOL
             public static readonly File Start = new File("start.exe", Directory.Root);
             public static readonly File Data1 = new File("data1.cpk", Directory.Cpk);
             public static readonly File SysFont = new File("sysfont01_ab.iggy", Directory.Iggy);
+            public static readonly File SysTed = new File("sysfont01_ab.iggyted", Directory.Iggy);
 
             public readonly string fileName;
             public readonly Directory root;

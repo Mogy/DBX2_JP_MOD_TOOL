@@ -46,6 +46,41 @@ namespace DBX2_JP_MOD_TOOL
                 return true;
             });
         }
+
+        public static async Task<bool> startExtractIggyTexPack()
+        {
+            return await Task.Run(() => {
+                if (!AppPath.File.IggytexPack.Exists() ||
+                    !AppPath.File.ZhTex.Exists()) return false;
+
+                var patcher = new Process();
+                patcher.StartInfo.FileName = AppPath.File.IggytexPack.fileName;
+                patcher.StartInfo.WorkingDirectory = AppPath.Directory.Bin.fullPath;
+                patcher.StartInfo.Arguments = createArguments(AppPath.File.ZhTex.fullPath);
+                patcher.Start();
+                patcher.WaitForExit();
+
+                return true;
+            });
+        }
+
+        public static async Task<bool> startRepackIggyTexPack()
+        {
+            return await Task.Run(() => {
+                if (!AppPath.File.IggytexPack.Exists() ||
+                    !AppPath.Directory.ZhTex.Exists()) return false;
+
+                var patcher = new Process();
+                patcher.StartInfo.FileName = AppPath.File.IggytexPack.fileName;
+                patcher.StartInfo.WorkingDirectory = AppPath.Directory.Bin.fullPath;
+                patcher.StartInfo.Arguments = createArguments("-iggyted", AppPath.Directory.ZhTex.fullPath);
+                patcher.Start();
+                patcher.WaitForExit();
+
+                return true;
+            });
+        }
+
         private static string createArguments(params string[] args)
         {
             return string.Join(" ", args.Select(x => '"' + x + '"'));
