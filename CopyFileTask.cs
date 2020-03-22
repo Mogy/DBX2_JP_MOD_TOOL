@@ -5,39 +5,27 @@ namespace DBX2_JP_MOD_TOOL
 {
     public static class CopyFileTask
     {
-        const string DIR_BIN = @"bin";
-        const string DIR_XV2_PATCHER = @"xv2patcher";
-        const string DIR_IGGY = @"data\system\iggy";
-        const string FONT_IGGY = "sysfont01_ab.iggy";
-        const string FONT_ZH_IGGY = "sysfont01_ab_zh.iggy";
-        public static async Task<bool> installXV2Patcher(string path)
+        public static async Task<bool> installXV2Patcher()
         {
-            var src = Path.Combine(DIR_BIN, DIR_XV2_PATCHER);
-            var dst = path;
-
             return await Task.Run(() => {
-                if (!Directory.Exists(Path.Combine(src, DIR_BIN)) ||
-                    !Directory.Exists(Path.Combine(src, DIR_XV2_PATCHER))) return false;
+                if (!AppPath.Directory.XV2Bin.Exists() ||
+                    !AppPath.Directory.XV2XV2Patcher.Exists()) return false;
 
-                copyDirectory(Path.Combine(src, DIR_BIN), Path.Combine(dst, DIR_BIN));
-                copyDirectory(Path.Combine(src, DIR_XV2_PATCHER), Path.Combine(dst, DIR_XV2_PATCHER));
+                copyDirectory(AppPath.Directory.XV2Bin.fullPath, GamePath.Directory.Bin.fullPath);
+                copyDirectory(AppPath.Directory.XV2XV2Patcher.fullPath, GamePath.Directory.XV2Patcher.fullPath);
 
                 return true;
             });
         }
 
-        public static async Task<bool> checkSystemFont(string path)
+        public static async Task<bool> checkSystemFont()
         {
-            var dirIggy = Path.Combine(path, DIR_IGGY);
-            var sysIggy = Path.Combine(dirIggy, FONT_IGGY);
-            var zhIggy = Path.Combine(DIR_BIN, DIR_IGGY, FONT_ZH_IGGY);
-
             return await Task.Run(() => {
-                if (File.Exists(sysIggy) ||
-                    !File.Exists(zhIggy)) return true;
+                if (GamePath.File.SysFont.Exists() ||
+                    !AppPath.File.ZhFont.Exists()) return true;
 
-                Directory.CreateDirectory(dirIggy);
-                File.Copy(zhIggy, sysIggy, true);
+                GamePath.Directory.Iggy.Create();
+                AppPath.File.ZhFont.Copy(GamePath.File.SysFont);
                 return false;
             });
         }

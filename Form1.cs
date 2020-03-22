@@ -9,8 +9,6 @@ namespace DBX2_JP_MOD_TOOL
 {
     public partial class Form1 : Form
     {
-        const string START = "start.exe";
-        const string CPK_DATA1 = @"cpk\data1.cpk";
         public Form1()
         {
             InitializeComponent();
@@ -106,12 +104,11 @@ namespace DBX2_JP_MOD_TOOL
         {
             appendLog("インストール先の存在チェック...");
 
-            var startExe = Path.Combine(txtDB.Text, START);
-            var data1Cpk = Path.Combine(txtDB.Text, CPK_DATA1);
+            GamePath.install = txtDB.Text;
 
-            if (!Directory.Exists(txtDB.Text) ||
-                !File.Exists(startExe) ||
-                !File.Exists(data1Cpk))
+            if (!GamePath.Directory.Root.Exists() ||
+                !GamePath.File.Start.Exists() ||
+                !GamePath.File.Data1.Exists())
             {
                 appendLog("NG", false);
                 showErrorDialog("Dragon Ball Xenoverse 2 が見つかりませんでした");
@@ -119,7 +116,7 @@ namespace DBX2_JP_MOD_TOOL
             }
 
             appendLog("OK", false);
-            Settings.Default.installPath = txtDB.Text;
+            Settings.Default.installPath = GamePath.install;
             Settings.Default.Save();
 
             return true;
@@ -177,7 +174,7 @@ namespace DBX2_JP_MOD_TOOL
         {
             appendLog("CriPackToolsの実行...");
 
-            var result = await ProcessTask.startCriPakTools(txtDB.Text);
+            var result = await ProcessTask.startCriPakTools();
 
             if (result)
             {
@@ -196,7 +193,7 @@ namespace DBX2_JP_MOD_TOOL
         {
             appendLog("MsgPatcherの実行...");
 
-            var result = await ProcessTask.startPatcher(txtDB.Text);
+            var result = await ProcessTask.startPatcher();
 
             if (result)
             {
@@ -215,7 +212,7 @@ namespace DBX2_JP_MOD_TOOL
         {
             appendLog("XV2Patcherのインストール...");
 
-            var result = await CopyFileTask.installXV2Patcher(txtDB.Text);
+            var result = await CopyFileTask.installXV2Patcher();
 
             if (result)
             {
@@ -234,7 +231,7 @@ namespace DBX2_JP_MOD_TOOL
         {
             appendLog("システムフォントのチェック...");
 
-            if (await CopyFileTask.checkSystemFont(txtDB.Text))
+            if (await CopyFileTask.checkSystemFont())
             {
                 appendLog("OK", false);
             }
