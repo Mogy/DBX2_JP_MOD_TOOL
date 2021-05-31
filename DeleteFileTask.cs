@@ -8,6 +8,7 @@ namespace DBX2_JP_MOD_TOOL
         {
             await Task.Run(() => {
                 AppPath.Directory.Data.Delete();
+                AppPath.File.EnMsg.Delete();
                 AppPath.File.JaMsg.Delete();
                 AppPath.File.Readme.Delete();
             });

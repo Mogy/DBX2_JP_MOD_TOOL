@@ -32,6 +32,7 @@ namespace DBX2_JP_MOD_TOOL
         }
         public class File : IFile
         {
+            public static readonly File EnMsg = new File("enMsg.txt", Directory.Bin);
             public static readonly File JaMsg = new File("jaMsg.txt", Directory.Bin);
             public static readonly File Readme = new File("Readme.txt", Directory.Bin);
             public static readonly File CriPakTools = new File("CriPakTools.exe", Directory.Bin);
